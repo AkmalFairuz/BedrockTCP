@@ -6,6 +6,8 @@ namespace AkmalFairuz\BedrockTCP\network;
 
 use AkmalFairuz\Sobana\server\ServerSession;
 use pocketmine\network\mcpe\PacketSender;
+use pocketmine\utils\Binary;
+use function strlen;
 
 class TCPPacketSender implements PacketSender{
 
@@ -16,7 +18,7 @@ class TCPPacketSender implements PacketSender{
     }
 
     public function send(string $payload, bool $immediate): void{
-        $this->session->write($payload);
+        $this->session->write(Binary::writeInt(strlen($payload)) . $payload);
     }
 
     public function close(string $reason = "unknown reason"): void{

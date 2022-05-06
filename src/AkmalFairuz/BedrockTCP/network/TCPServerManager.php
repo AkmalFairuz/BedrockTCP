@@ -16,7 +16,7 @@ class TCPServerManager extends ServerManager implements NetworkInterface{
 
     public function __construct(protected Server $server, protected Network $network, string $ip, int $port, ?string $sessionClass = null, ?string $encoderClass = null, ?string $decoderClass = null){
         parent::__construct($ip, $port, $sessionClass, $encoderClass, $decoderClass);
-        $this->broadcaster = new StandardPacketBroadcaster($this->server);
+        $this->broadcaster = new StandardPacketBroadcaster($this->server, 503);
     }
 
     /**

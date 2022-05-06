@@ -21,9 +21,6 @@ class TCPCompressor implements Compressor{
 
     use SingletonTrait;
 
-    const ZLIB = 1;
-    const ZSTD = 2;
-
     public static function make() : self{
         return new self(5, ZlibCompressor::DEFAULT_THRESHOLD, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE);
     }
@@ -40,9 +37,10 @@ class TCPCompressor implements Compressor{
 
     public function decompress(string $payload): string{
         $compressAlgo = substr($payload, 0, 1);
-        if($compressAlgo === "\x01") {
+        $payload = substr($payload, 1);
+        if($compressAlgo === "\x00") {
             $result = @zlib_decode($payload);
-        }elseif($compressAlgo === "\x02"){
+        }elseif($compressAlgo === "\x01"){
             $result = @zstd_uncompress($payload);
         }else{
             throw new DecompressionException("Invalid compression algorithm " . ord($compressAlgo));
@@ -57,17 +55,12 @@ class TCPCompressor implements Compressor{
         return Utils::assumeNotFalse(zlib_encode($data, ZLIB_ENCODING_RAW, $level), "ZLIB compression failed");
     }
 
-    public function compress(string $payload, int $algo = self::ZLIB): string{
-        if($algo === self::ZLIB) {
-            if(function_exists('libdeflate_deflate_compress')){
-                return $this->willCompress($payload) ?
+    public function compress(string $payload): string{
+        if(function_exists('libdeflate_deflate_compress')){
+            return ($this->willCompress($payload) ?
                     libdeflate_deflate_compress($payload, $this->level) :
-                    self::zlib_encode($payload, 0);
-            }
-            return self::zlib_encode($payload, $this->willCompress($payload) ? $this->level : 0);
-        }elseif($algo === self::ZSTD){
-            return @zstd_compress($payload, $this->level);
+                    self::zlib_encode($payload, 0));
         }
-        throw new DecompressionException("Invalid compression algorithm " . $algo);
+        return self::zlib_encode($payload, $this->willCompress($payload) ? $this->level : 0);
     }
 }
