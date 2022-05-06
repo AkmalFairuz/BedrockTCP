@@ -1,0 +1,4 @@
+name: BedrockTCP
+api: 4.0.0
+main: AkmalFairuz\BedrockTCP\BedrockTCP
+version: 1.0.0
