@@ -6,6 +6,7 @@ namespace AkmalFairuz\BedrockTCP\compressor;
 
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\DecompressionException;
+use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use function function_exists;
@@ -22,6 +23,10 @@ class TCPCompressor implements Compressor{
 
     const ZLIB = 1;
     const ZSTD = 2;
+
+    public static function make() : self{
+        return new self(5, ZlibCompressor::DEFAULT_THRESHOLD, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE);
+    }
 
     public function __construct(
         private int $level,
