@@ -45,9 +45,6 @@ class TCPSession extends ServerSession{
             $frameLength = Binary::readInt(substr($this->pendingBuffer, 0, 4));
             $payload = substr($this->pendingBuffer, 4, $frameLength);
             if($frameLength !== ($payloadLen = strlen($payload))){
-                if($payloadLen > $frameLength) { // wait, that's illegal
-                    $this->close();
-                }
                 break;
             }
             $this->pendingBuffer = substr($this->pendingBuffer, 4 + $frameLength);
