@@ -51,7 +51,7 @@ class BedrockTCP extends PluginBase implements Listener{
         /** @var TCPNetworkSession $origin */
         $origin = $event->getOrigin();
         if($packet instanceof NetworkStackLatencyPacket) {
-            if($packet->timestamp === 0 && $packet->needResponse) {
+            if($packet->timestamp === 0 && $packet->needResponse && $origin->isLoggedIn()) {
                 $origin->sendDataPacket($packet, true);
                 $event->cancel();
             }
