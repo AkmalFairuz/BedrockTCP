@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace AkmalFairuz\BedrockTCP;
 
+use AkmalFairuz\BedrockTCP\network\TCPNetworkSession;
 use AkmalFairuz\BedrockTCP\network\TCPServerManager;
 use AkmalFairuz\BedrockTCP\network\TCPSession;
 use pocketmine\event\Listener;
+use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
+use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
+use pocketmine\network\mcpe\protocol\TickSyncPacket;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use function function_exists;
@@ -33,6 +37,27 @@ class BedrockTCP extends PluginBase implements Listener{
     public function onNetworkInterfaceRegister(NetworkInterfaceRegisterEvent $event) {
         $interface = $event->getInterface();
         if(!$interface instanceof TCPServerManager) {
+            $event->cancel();
+        }
+    }
+
+    /**
+     * @param DataPacketReceiveEvent $event
+     * @priority LOWEST
+     * @ignoreCancelled true
+     */
+    public function onDataPacketReceive(DataPacketReceiveEvent $event) {
+        $packet = $event->getPacket();
+        /** @var TCPNetworkSession $origin */
+        $origin = $event->getOrigin();
+        if($packet instanceof NetworkStackLatencyPacket) {
+            if($packet->timestamp === 0 && $packet->needResponse) {
+                $origin->sendDataPacket($packet);
+                $event->cancel();
+            }
+        }elseif($packet instanceof TickSyncPacket) {
+            $origin->upstreamPing = $packet->getClientSendTime();
+            $origin->downstreamPing = $packet->getServerReceiveTime();
             $event->cancel();
         }
     }

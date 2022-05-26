@@ -28,7 +28,7 @@ class TCPSession extends ServerSession{
     private string $pendingBuffer = "";
 
     public function onConnect(): void{
-        $this->networkSession = new NetworkSession(
+        $this->networkSession = new TCPNetworkSession(
             $this->serverManager->getServer(),
             $this->serverManager->getNetwork()->getSessionManager(),
             PacketPool::getInstance(),
@@ -38,6 +38,7 @@ class TCPSession extends ServerSession{
             $this->getIp(),
             $this->getPort()
         );
+        $this->networkSession->updatePing(1);
     }
 
     public function handlePacket(string $packet): void{
