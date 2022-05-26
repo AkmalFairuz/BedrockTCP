@@ -8,10 +8,12 @@ use AkmalFairuz\BedrockTCP\compressor\TCPCompressor;
 use AkmalFairuz\Sobana\server\ServerSession;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PacketPool;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\PacketHandlingException;
+use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
-use function base64_encode;
 use function strlen;
 use function substr;
 
@@ -31,7 +33,7 @@ class TCPSession extends ServerSession{
             $this->serverManager->getNetwork()->getSessionManager(),
             PacketPool::getInstance(),
             new TCPPacketSender($this),
-            $this->serverManager->getBroadcaster(),
+            RakLibInterface::getBroadcaster(Server::getInstance(), ProtocolInfo::CURRENT_PROTOCOL),
             TCPCompressor::getInstance(),
             $this->getIp(),
             $this->getPort()
@@ -44,7 +46,7 @@ class TCPSession extends ServerSession{
         while(strlen($this->pendingBuffer) > 0){
             $frameLength = Binary::readInt(substr($this->pendingBuffer, 0, 4));
             $payload = substr($this->pendingBuffer, 4, $frameLength);
-            if($frameLength !== ($payloadLen = strlen($payload))){
+            if($frameLength !== strlen($payload)){
                 break;
             }
             $this->pendingBuffer = substr($this->pendingBuffer, 4 + $frameLength);

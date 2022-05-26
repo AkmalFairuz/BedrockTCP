@@ -19,10 +19,12 @@ use const ZLIB_ENCODING_RAW;
 
 class TCPCompressor implements Compressor{
 
+    const COMPRESSION_LEVEL = 2;
+
     use SingletonTrait;
 
     public static function make() : self{
-        return new self(5, ZlibCompressor::DEFAULT_THRESHOLD, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE);
+        return new self(self::COMPRESSION_LEVEL, ZlibCompressor::DEFAULT_THRESHOLD, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE);
     }
 
     public function __construct(
