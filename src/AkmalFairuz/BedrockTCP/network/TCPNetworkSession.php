@@ -26,8 +26,4 @@ class TCPNetworkSession extends NetworkSession{
     public function getTotalPing(): int{
         return $this->downstreamPing + $this->upstreamPing;
     }
-
-    public function isLoggedIn(): bool{
-        return $this->loggedIn;
-    }
 }

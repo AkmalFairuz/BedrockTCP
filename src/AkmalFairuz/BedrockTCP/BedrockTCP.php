@@ -7,10 +7,11 @@ namespace AkmalFairuz\BedrockTCP;
 use AkmalFairuz\BedrockTCP\network\TCPNetworkSession;
 use AkmalFairuz\BedrockTCP\network\TCPServerManager;
 use AkmalFairuz\BedrockTCP\network\TCPSession;
+use AkmalFairuz\BedrockTCP\packet\NSL;
 use pocketmine\event\Listener;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
-use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
+use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\TickSyncPacket;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
@@ -28,6 +29,7 @@ class BedrockTCP extends PluginBase implements Listener{
         $port = Server::getInstance()->getPort();
         $this->getServer()->getNetwork()->registerInterface(new TCPServerManager($this->getServer(), $this->getServer()->getNetwork(), $ip, $port, TCPSession::class));
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        PacketPool::getInstance()->registerPacket(new NSL());
     }
 
     /**
@@ -50,11 +52,9 @@ class BedrockTCP extends PluginBase implements Listener{
         $packet = $event->getPacket();
         /** @var TCPNetworkSession $origin */
         $origin = $event->getOrigin();
-        if($packet instanceof NetworkStackLatencyPacket) {
+        if($packet instanceof NSL) {
             if($packet->timestamp === 0 && $packet->needResponse) {
-                if($origin->isLoggedIn()){
-                    $origin->sendDataPacket($packet, true);
-                }
+                $origin->sendDataPacket($packet, true);
                 $event->cancel();
             }
         }elseif($packet instanceof TickSyncPacket) {
