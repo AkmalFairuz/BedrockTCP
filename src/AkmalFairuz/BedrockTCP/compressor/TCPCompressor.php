@@ -42,8 +42,8 @@ class TCPCompressor implements Compressor{
         $payload = substr($payload, 1);
         if($compressAlgo === "\x00") {
             $result = @zlib_decode($payload);
-        }elseif($compressAlgo === "\x01"){
-            $result = @zstd_uncompress($payload);
+        /*}elseif($compressAlgo === "\x01"){
+            $result = @zstd_uncompress($payload);*/
         }else{
             throw new DecompressionException("Invalid compression algorithm " . ord($compressAlgo));
         }
