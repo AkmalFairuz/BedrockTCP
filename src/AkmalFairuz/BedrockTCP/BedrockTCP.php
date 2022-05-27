@@ -27,7 +27,7 @@ class BedrockTCP extends PluginBase implements Listener{
         }*/
         $ip = Server::getInstance()->getIp();
         $port = Server::getInstance()->getPort();
-        $this->getServer()->getNetwork()->registerInterface(new TCPServerManager($this->getServer(), $this->getServer()->getNetwork(), $ip, $port, TCPSession::class));
+        $this->getServer()->getNetwork()->registerInterface(new TCPServerManager($this, $this->getServer(), $this->getServer()->getNetwork(), $ip, $port, TCPSession::class));
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         PacketPool::getInstance()->registerPacket(new NSL());
     }

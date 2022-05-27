@@ -7,12 +7,13 @@ namespace AkmalFairuz\BedrockTCP\network;
 use AkmalFairuz\Sobana\server\ServerManager;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\Network;
+use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 
 class TCPServerManager extends ServerManager implements AdvancedNetworkInterface{
 
-    public function __construct(protected Server $server, protected Network $network, string $ip, int $port, ?string $sessionClass = null, ?string $encoderClass = null, ?string $decoderClass = null){
-        parent::__construct($ip, $port, $sessionClass, $encoderClass, $decoderClass);
+    public function __construct(PluginBase $plugin, protected Server $server, protected Network $network, string $ip, int $port, ?string $sessionClass = null, ?string $encoderClass = null, ?string $decoderClass = null){
+        parent::__construct($plugin, $ip, $port, $sessionClass, $encoderClass, $decoderClass);
     }
 
     /**
